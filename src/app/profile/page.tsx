@@ -40,6 +40,8 @@ export default async function ProfilePage() {
       review_count: r.recipe_feedbacks?.length ?? 0,
     }))
 
+  if (!profile) redirect('/login')
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <div className="flex items-center gap-4 mb-10">
