@@ -69,8 +69,7 @@ export default function AuthDropdown() {
       await logout()
       setProfile(null)
       setOpen(false)
-      router.push('/')
-      router.refresh()
+      window.location.href = '/'
     })
   }
 

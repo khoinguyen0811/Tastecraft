@@ -19,8 +19,8 @@ export default function LoginPage() {
       if (result?.error) {
         setError(result.error)
       } else {
-        router.push('/')
-        router.refresh() // force re-render server components (Header)
+        // Full reload để Supabase browser client đọc lại session cookie từ server
+        window.location.href = '/'
       }
     })
   }
