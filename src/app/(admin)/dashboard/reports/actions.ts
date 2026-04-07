@@ -88,7 +88,7 @@ export async function forceHideRecipe(reportId: number, recipeId: number) {
       await sendNotification(admin, recipe.user_id, {
         type: 'recipe_hidden',
         title: 'Công thức của bạn đã bị ẩn',
-        body: `Công thức "${recipe.title}" đã bị ẩn do vi phạm chính sách cộng đồng của Culinaria.`,
+        body: `Công thức "${recipe.title}" đã bị ẩn do vi phạm chính sách cộng đồng của Bếp Nhà Làm.`,
         link: `/recipes/${recipe.slug}`,
       })
     }

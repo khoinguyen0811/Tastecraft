@@ -72,7 +72,7 @@ export default function AuthDropdown({ initialProfile }: Props) {
             <>
               <div className="px-5 py-4 border-b border-gray-100">
                 <p className="font-bold text-sm">{profile.username}</p>
-                <p className="text-xs text-gray-400">Thành viên Culinaria</p>
+                <p className="text-xs text-gray-400">Thành viên Bếp Nhà Làm</p>
               </div>
               <div className="py-2">
                 <Link href="/profile" onClick={() => setOpen(false)}

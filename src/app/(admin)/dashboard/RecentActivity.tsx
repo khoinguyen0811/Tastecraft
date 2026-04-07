@@ -36,7 +36,7 @@ export default function RecentActivity({ recentUsers, recentRecipes }: RecentAct
       type: 'user' as const,
       id: u.id,
       label: 'Người dùng mới đăng ký',
-      description: `${u.username} vừa gia nhập cộng đồng Culinaria.`,
+      description: `${u.username} vừa gia nhập cộng đồng Bếp Nhà Làm.`,
       created_at: u.created_at,
     })),
     ...recentRecipes.map(r => ({

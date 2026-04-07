@@ -29,7 +29,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#f8f7f5] px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <Link href="/" className="text-3xl font-bold text-orange-600 font-serif">Culinaria</Link>
+          <Link href="/" className="text-3xl font-bold text-orange-600 font-serif">Bếp Nhà Làm</Link>
           <p className="text-gray-500 mt-2">Chào mừng trở lại</p>
         </div>
 

@@ -34,7 +34,7 @@ export default function Sidebar() {
             <i className="fa fa-utensils text-sm"></i>
           </div>
           <div>
-            <h1 className="font-bold text-gray-800 leading-tight">Culinaria</h1>
+            <h1 className="font-bold text-gray-800 leading-tight">Bếp Nhà Làm</h1>
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Admin Console</p>
           </div>
         </div>

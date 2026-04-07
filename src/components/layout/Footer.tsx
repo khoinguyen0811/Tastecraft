@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className="bg-[#f3f3f3] mt-24 py-20">
       <div className="mx-auto w-full max-w-[1200px] px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
         <div>
-          <h3 className="text-2xl font-bold text-orange-800 mb-6 font-serif">Culinaria</h3>
+          <h3 className="text-2xl font-bold text-orange-800 mb-6 font-serif">Bếp Nhà Làm</h3>
           <p className="text-gray-500 text-sm leading-relaxed">Nâng tầm nghệ thuật nấu ăn tại nhà thông qua những câu chuyện biên tập và những trải nghiệm ẩm thực được chọn lọc.</p>
           <div className="flex space-x-4 mt-6">
             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center"><i className="fab fa-facebook-f text-xs"></i></div>
@@ -38,7 +38,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="mx-auto w-full max-w-[1200px] px-4 mt-20 pt-8 border-t border-gray-200 flex justify-between text-[10px] text-gray-400 uppercase tracking-widest">
-        <p>© 2026 Culinaria. Bảo lưu mọi quyền.</p>
+        <p>© 2026 Bếp Nhà Làm. Bảo lưu mọi quyền.</p>
         <div className="space-x-6">
           <span>Chính sách Bảo mật</span>
           <span>Điều khoản Dịch vụ</span>

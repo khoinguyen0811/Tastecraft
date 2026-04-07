@@ -6,7 +6,7 @@ export default function ProBanner() {
         <h2 className="text-4xl font-serif font-bold mb-4 leading-tight">Nghệ thuật Lên Kế hoạch Bữa ăn Hàng ngày</h2>
         <p className="text-white/70 mb-8">Mở khóa thực đơn hàng tuần độc quyền, theo dõi dinh dưỡng và danh sách đi chợ nghệ thuật được thiết kế cho ngôi nhà Việt hiện đại.</p>
         <button className="bg-orange-400 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-xl transition">
-          Nâng cấp lên Culinaria+
+          Nâng cấp lên Bếp Nhà Làm+
         </button>
       </div>
       <div className="md:w-2/5 mt-8 md:mt-0 flex justify-center">

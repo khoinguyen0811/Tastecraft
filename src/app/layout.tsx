@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', weight: '700' })
 
 export const metadata: Metadata = {
-  title: 'Culinaria',
+  title: 'Bếp Nhà Làm',
   description: 'Nâng tầm nghệ thuật nấu ăn tại nhà',
 }
 

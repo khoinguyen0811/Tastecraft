@@ -22,7 +22,7 @@ export default async function Header() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="mx-auto w-full max-w-[1200px] px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-orange-600">Culinaria</Link>
+        <Link href="/" className="text-2xl font-bold text-orange-600">Bếp Nhà Làm</Link>
 
         <nav className="hidden md:flex space-x-6 font-medium">
           <Link href="/" className="hover:text-orange-600">Trang chủ</Link>

@@ -29,7 +29,7 @@ export default async function EventsPage() {
       <div className="text-center mb-12">
         <span className="text-[10px] uppercase tracking-widest text-orange-600 font-bold">Cộng đồng</span>
         <h1 className="text-4xl font-bold font-serif mt-2 mb-3">Sự kiện & Thử thách</h1>
-        <p className="text-gray-400 max-w-lg mx-auto">Tham gia các thử thách nấu ăn cùng cộng đồng Culinaria. Chia sẻ công thức, nhận phản hồi và kết nối với những người yêu bếp.</p>
+        <p className="text-gray-400 max-w-lg mx-auto">Tham gia các thử thách nấu ăn cùng cộng đồng Bếp Nhà Làm. Chia sẻ công thức, nhận phản hồi và kết nối với những người yêu bếp.</p>
       </div>
 
       {/* Đang diễn ra */}

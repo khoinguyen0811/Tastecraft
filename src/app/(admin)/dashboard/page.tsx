@@ -52,7 +52,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <AdminHeader username={profile.username} avatar={profile.avatar} title="Tổng quan hệ thống" subtitle="Tóm tắt hoạt động của Culinaria" />
+      <AdminHeader username={profile.username} avatar={profile.avatar} title="Tổng quan hệ thống" subtitle="Tóm tắt hoạt động của Bếp Nhà Làm" />
       <main className="flex-1 overflow-y-auto bg-[#f8f9fa] p-8">
         <div className="space-y-6">
           <StatsCards totalUsers={totalUsers ?? 0} totalRecipes={totalRecipes ?? 0} reportCount={0} />
