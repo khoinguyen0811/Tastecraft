@@ -13,36 +13,38 @@ interface UserProfile {
 
 export default function AuthDropdown() {
   const [open, setOpen] = useState(false)
-  const [profile, setProfile] = useState<UserProfile | null | undefined>(undefined) // undefined = loading
+  const [profile, setProfile] = useState<UserProfile | null | undefined>(undefined)
   const [isPending, startTransition] = useTransition()
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const supabase = createClient()
+  // Stable supabase instance
+  const supabaseRef = useRef(createClient())
 
-  // Fetch session + profile phía client
   useEffect(() => {
+    const supabase = supabaseRef.current
+
     async function fetchProfile() {
-      // Dùng getSession() cho client — đọc từ cookie/localStorage, không gọi network
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) { setProfile(null); return }
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session?.user) { setProfile(null); return }
 
-      const user = session.user
-      const { data } = await supabase
-        .from('users')
-        .select('username, avatar')
-        .eq('id', user.id)
-        .maybeSingle()
+        const { data } = await supabase
+          .from('users')
+          .select('username, avatar')
+          .eq('id', session.user.id)
+          .maybeSingle()
 
-      if (data) {
-        setProfile({ username: data.username, avatar: data.avatar })
-      } else {
-        setProfile({ username: user.email?.split('@')[0] ?? 'user', avatar: null })
+        setProfile(data
+          ? { username: data.username, avatar: data.avatar }
+          : { username: session.user.email?.split('@')[0] ?? 'user', avatar: null }
+        )
+      } catch {
+        setProfile(null)
       }
     }
 
     fetchProfile()
 
-    // Lắng nghe thay đổi auth state (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         fetchProfile()
@@ -72,7 +74,6 @@ export default function AuthDropdown() {
     })
   }
 
-  // Đang load — hiện icon mờ
   if (profile === undefined) {
     return <i className="fa fa-user-circle text-2xl text-gray-300"></i>
   }
@@ -91,19 +92,14 @@ export default function AuthDropdown() {
         aria-label="Tài khoản"
       >
         {profile ? (
-          avatarUrl ? (
-            <>
-              <img
-                src={avatarUrl}
-                alt={profile.username}
-                className="w-8 h-8 rounded-full object-cover border-2 border-orange-200"
-              />
-              <span className="hidden md:block text-sm font-medium">{profile.username}</span>
-              <i className={`fa fa-chevron-down text-xs text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}></i>
-            </>
-          ) : (
-            <i className="fa fa-user-circle text-2xl text-orange-500 transition"></i>
-          )
+          <>
+            {avatarUrl
+              ? <img src={avatarUrl} alt={profile.username} className="w-8 h-8 rounded-full object-cover border-2 border-orange-200" />
+              : <i className="fa fa-user-circle text-2xl text-orange-500"></i>
+            }
+            <span className="hidden md:block text-sm font-medium">{profile.username}</span>
+            <i className={`fa fa-chevron-down text-xs text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}></i>
+          </>
         ) : (
           <i className="fa fa-user-circle text-2xl text-gray-600 hover:text-orange-500 transition"></i>
         )}
