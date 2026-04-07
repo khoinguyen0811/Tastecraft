@@ -42,19 +42,21 @@ export default async function ProfilePage() {
 
   if (!profile) redirect('/login')
 
+  const safeProfile = profile as NonNullable<typeof profile>
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <div className="flex items-center gap-4 mb-10">
         <div>
           <h1 className="text-3xl font-bold">Trang cá nhân</h1>
-          <p className="text-gray-400 text-sm mt-1">{profile?.email}</p>
+          <p className="text-gray-400 text-sm mt-1">{safeProfile.email}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 items-start">
         {/* LEFT: form thông tin */}
         <div className="lg:col-span-1">
-          <ProfileForm profile={profile} />
+          <ProfileForm profile={safeProfile} />
         </div>
 
         {/* RIGHT: kho công thức */}
