@@ -1,65 +1,61 @@
-import Image from "next/image";
+import { createClient } from '@/lib/supabase/server'
+import HeroBanner from '@/components/home/HeroBanner'
+import TrendingRecipes from '@/components/home/TrendingRecipes'
+import NewestRecipes from '@/components/home/NewestRecipes'
+import MasterclassGrid from '@/components/home/MasterclassGrid'
+import { Recipe } from '@/types'
 
-export default function Home() {
+function mapRecipe(r: any): Recipe {
+  return {
+    ...r,
+    users: r.users,
+    tags: r.recipe_tag?.map((rt: any) => rt.tags).filter(Boolean) ?? [],
+    avg_rating: r.recipe_feedbacks?.length
+      ? r.recipe_feedbacks.reduce((sum: number, f: any) => sum + f.rating, 0) / r.recipe_feedbacks.length
+      : 0,
+    review_count: r.recipe_feedbacks?.length ?? 0,
+  }
+}
+
+const SELECT_FIELDS = `
+  id, title, slug, image_main, description, cooking_time, difficulty, created_at,
+  users ( username, avatar ),
+  recipe_feedbacks ( rating ),
+  recipe_tag ( tags ( id, name, type, slug ) )
+`
+
+export default async function HomePage() {
+  const supabase = await createClient()
+
+  // Trending: lấy nhiều hơn rồi sort theo số feedback phía JS
+  const [{ data: allRecipes }, { data: newestRaw }] = await Promise.all([
+    supabase
+      .from('recipes')
+      .select(SELECT_FIELDS)
+      .eq('is_active', true)
+      .limit(20),
+    supabase
+      .from('recipes')
+      .select(SELECT_FIELDS)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(4),
+  ])
+
+  // Sort theo số lượng feedback giảm dần → lấy top 3
+  const trending: Recipe[] = (allRecipes ?? [])
+    .map(mapRecipe)
+    .sort((a, b) => (b.review_count ?? 0) - (a.review_count ?? 0))
+    .slice(0, 3)
+
+  const newest: Recipe[] = (newestRaw ?? []).map(mapRecipe)
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="px-6 pb-20">
+      <HeroBanner />
+      <TrendingRecipes recipes={trending} />
+      <NewestRecipes recipes={newest} />
+      <MasterclassGrid />
     </div>
-  );
+  )
 }
