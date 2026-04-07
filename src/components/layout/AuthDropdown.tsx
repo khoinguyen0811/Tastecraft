@@ -22,9 +22,11 @@ export default function AuthDropdown() {
   // Fetch session + profile phía client
   useEffect(() => {
     async function fetchProfile() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { setProfile(null); return }
+      // Dùng getSession() cho client — đọc từ cookie/localStorage, không gọi network
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) { setProfile(null); return }
 
+      const user = session.user
       const { data } = await supabase
         .from('users')
         .select('username, avatar')
@@ -34,7 +36,6 @@ export default function AuthDropdown() {
       if (data) {
         setProfile({ username: data.username, avatar: data.avatar })
       } else {
-        // Profile chưa tồn tại — hiển thị tạm bằng email
         setProfile({ username: user.email?.split('@')[0] ?? 'user', avatar: null })
       }
     }
@@ -42,8 +43,12 @@ export default function AuthDropdown() {
     fetchProfile()
 
     // Lắng nghe thay đổi auth state (login/logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      fetchProfile()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        fetchProfile()
+      } else {
+        setProfile(null)
+      }
     })
 
     return () => subscription.unsubscribe()
