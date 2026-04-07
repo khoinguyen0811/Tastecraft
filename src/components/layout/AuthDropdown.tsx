@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { logout } from '@/app/(auth)/actions'
 
 interface UserProfile {
@@ -11,50 +10,18 @@ interface UserProfile {
   avatar: string | null
 }
 
-export default function AuthDropdown() {
+interface Props {
+  initialProfile: UserProfile | null
+}
+
+export default function AuthDropdown({ initialProfile }: Props) {
   const [open, setOpen] = useState(false)
-  const [profile, setProfile] = useState<UserProfile | null | undefined>(undefined)
   const [isPending, startTransition] = useTransition()
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  // Stable supabase instance
-  const supabaseRef = useRef(createClient())
 
-  useEffect(() => {
-    const supabase = supabaseRef.current
-
-    async function fetchProfile() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session?.user) { setProfile(null); return }
-
-        const { data } = await supabase
-          .from('users')
-          .select('username, avatar')
-          .eq('id', session.user.id)
-          .maybeSingle()
-
-        setProfile(data
-          ? { username: data.username, avatar: data.avatar }
-          : { username: session.user.email?.split('@')[0] ?? 'user', avatar: null }
-        )
-      } catch {
-        setProfile(null)
-      }
-    }
-
-    fetchProfile()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        fetchProfile()
-      } else {
-        setProfile(null)
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
+  // Dùng initialProfile từ server — không cần fetch client-side
+  const profile = initialProfile
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -67,14 +34,9 @@ export default function AuthDropdown() {
   function handleLogout() {
     startTransition(async () => {
       await logout()
-      setProfile(null)
       setOpen(false)
       window.location.href = '/'
     })
-  }
-
-  if (profile === undefined) {
-    return <i className="fa fa-user-circle text-2xl text-gray-300"></i>
   }
 
   const avatarUrl = profile?.avatar?.startsWith('http')

@@ -1,10 +1,24 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { createClient } from '@/lib/supabase/server'
 import AuthDropdown from './AuthDropdown'
 import SearchBar from './SearchBar'
 import NotificationBell from './NotificationBell'
 
-export default function Header() {
+export default async function Header() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  let profile: { username: string; avatar: string | null } | null = null
+  if (user) {
+    const { data } = await supabase
+      .from('users')
+      .select('username, avatar')
+      .eq('id', user.id)
+      .maybeSingle()
+    profile = data ?? { username: user.email?.split('@')[0] ?? 'user', avatar: null }
+  }
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="mx-auto w-full max-w-[1200px] px-4 py-4 flex justify-between items-center">
@@ -26,7 +40,7 @@ export default function Header() {
             <SearchBar />
           </Suspense>
           <NotificationBell />
-          <AuthDropdown />
+          <AuthDropdown initialProfile={profile} />
         </div>
       </div>
     </header>
