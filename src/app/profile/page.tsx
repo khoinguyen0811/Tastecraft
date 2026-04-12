@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import ProfileForm from './ProfileForm'
 import SavedRecipes from './SavedRecipes'
+import RankCard from './RankCard'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -11,7 +12,7 @@ export default async function ProfilePage() {
   const [{ data: profile }, { data: savedRaw }] = await Promise.all([
     supabase
       .from('users')
-      .select('username, bio, avatar, email, created_at')
+      .select('username, bio, avatar, email, created_at, xp, rank')
       .eq('id', user.id)
       .single(),
     supabase
@@ -55,7 +56,8 @@ export default async function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 items-start">
         {/* LEFT: form thông tin */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-4">
+          <RankCard xp={safeProfile.xp ?? 0} rank={safeProfile.rank ?? 'Bronze'} />
           <ProfileForm profile={safeProfile} />
         </div>
 

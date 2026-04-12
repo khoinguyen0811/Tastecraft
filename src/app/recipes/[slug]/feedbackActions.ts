@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { awardXP } from '@/lib/xp'
 
 export async function createFeedback(formData: FormData) {
   const supabase = await createClient()
@@ -16,7 +17,6 @@ export async function createFeedback(formData: FormData) {
   if (!rating || rating < 1 || rating > 5) return { error: 'Vui lòng chọn số sao' }
   if (!content?.trim()) return { error: 'Vui lòng nhập nội dung đánh giá' }
 
-  // Kiểm tra đã review chưa
   const { data: existing } = await supabase
     .from('recipe_feedbacks')
     .select('id')
@@ -35,6 +35,9 @@ export async function createFeedback(formData: FormData) {
   })
 
   if (error) return { error: error.message }
+
+  // +5 XP cho người comment
+  await awardXP(user.id, 'COMMENT', String(recipeId))
 
   const slug = formData.get('slug') as string
   revalidatePath(`/recipes/${slug}`)

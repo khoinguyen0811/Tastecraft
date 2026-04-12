@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { awardXP } from '@/lib/xp'
 
 function toSlug(title: string) {
   return title
@@ -79,6 +79,9 @@ export async function createRecipe(payload: RecipePayload) {
     if (stepError) console.error('steps error:', stepError.message)
   }
 
+  // +20 XP cho việc tạo công thức
+  await awardXP(user.id, 'POST', String(recipe.id))
+
   // Nếu tạo trong context event → kiểm tra giới hạn rồi join
   if (payload.event_id) {
     // Lấy giới hạn của event
@@ -106,6 +109,9 @@ export async function createRecipe(payload: RecipePayload) {
       user_id: user.id,
       recipe_id: recipe.id,
     })
+
+    // +30 XP cho việc tham gia event
+    await awardXP(user.id, 'EVENT_JOIN', String(payload.event_id))
   }
 
   return { slug: recipe.slug }

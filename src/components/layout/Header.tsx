@@ -28,6 +28,7 @@ export default async function Header() {
           <Link href="/" className="hover:text-orange-600">Trang chủ</Link>
           <Link href="/recipes" className="hover:text-orange-600">Khám phá công thức</Link>
           <Link href="/events" className="hover:text-orange-600">Sự kiện</Link>
+          <Link href="/leaderboard" className="hover:text-orange-600">Xếp hạng</Link>
         </nav>
 
         <div className="flex items-center space-x-4">

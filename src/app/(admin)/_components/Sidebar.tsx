@@ -11,6 +11,7 @@ const navLinks = [
   { href: '/dashboard/recipes', label: 'Công thức', icon: 'fa-book-open' },
   { href: '/dashboard/reports', label: 'Báo cáo', icon: 'fa-flag' },
   { href: '/dashboard/events', label: 'Sự kiện', icon: 'fa-trophy' },
+  { href: '/leaderboard', label: 'Xếp hạng', icon: 'fa-medal' },
 ]
 
 export default function Sidebar() {
