@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef } from 'react'
 import { createEvent, toggleEventActive, deleteEvent } from './actions'
 import RecipeImage from '@/components/ui/RecipeImage'
+import EditEventModal from './EditEventModal'
 
 interface Event {
   id: number
@@ -13,6 +14,7 @@ interface Event {
   end_date: string
   is_active: boolean
   participant_count: number
+  max_recipes_per_user: number
 }
 
 function EventForm({ onSuccess }: { onSuccess: (e: Event) => void }) {
@@ -219,6 +221,10 @@ export default function EventList({ events }: { events: Event[]; adminId: string
                       className={`flex-1 py-2 rounded-xl text-xs font-bold transition ${event.is_active ? 'bg-gray-100 hover:bg-red-50 hover:text-red-500 text-gray-600' : 'bg-green-50 hover:bg-green-100 text-green-600'}`}>
                       {event.is_active ? 'Ẩn sự kiện' : 'Kích hoạt'}
                     </button>
+                    <EditEventModal
+                      event={event}
+                      onSuccess={updated => setList(l => l.map(e => e.id === event.id ? { ...e, ...updated } : e))}
+                    />
                     <a href={`/dashboard/events/${event.id}`}
                       className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-bold transition">
                       Quản lý

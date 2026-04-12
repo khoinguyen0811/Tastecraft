@@ -9,14 +9,14 @@ export default async function Header() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  let profile: { username: string; avatar: string | null } | null = null
+  let profile: { username: string; avatar: string | null; role: string } | null = null
   if (user) {
     const { data } = await supabase
       .from('users')
-      .select('username, avatar')
+      .select('username, avatar, role')
       .eq('id', user.id)
       .maybeSingle()
-    profile = data ?? { username: user.email?.split('@')[0] ?? 'user', avatar: null }
+    profile = data ?? { username: user.email?.split('@')[0] ?? 'user', avatar: null, role: 'user' }
   }
 
   return (

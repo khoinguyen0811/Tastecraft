@@ -44,3 +44,21 @@ export async function deleteEvent(id: number) {
   revalidatePath('/dashboard/events')
   return { success: true }
 }
+
+export async function updateEvent(id: number, formData: FormData) {
+  const admin = createAdminClient()
+  const title = (formData.get('title') as string).trim()
+  const description = (formData.get('description') as string).trim()
+  const banner_image = (formData.get('banner_image') as string).trim() || null
+  const max_recipes_per_user = parseInt(formData.get('max_recipes_per_user') as string) || 2
+
+  if (!title) return { error: 'Vui lòng nhập tên sự kiện' }
+
+  const { error } = await admin.from('events').update({
+    title, description, banner_image, max_recipes_per_user,
+  }).eq('id', id)
+
+  if (error) return { error: error.message }
+  revalidatePath('/dashboard/events')
+  return { success: true }
+}

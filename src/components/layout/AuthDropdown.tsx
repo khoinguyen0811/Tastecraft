@@ -8,6 +8,7 @@ import { logout } from '@/app/(auth)/actions'
 interface UserProfile {
   username: string
   avatar: string | null
+  role: string
 }
 
 interface Props {
@@ -75,6 +76,12 @@ export default function AuthDropdown({ initialProfile }: Props) {
                 <p className="text-xs text-gray-400">Thành viên Bếp Nhà Làm</p>
               </div>
               <div className="py-2">
+                {profile.role === 'admin' && (
+                  <Link href="/dashboard" onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 px-5 py-3 text-sm hover:bg-orange-50 text-orange-600 font-medium transition">
+                    <i className="fa fa-th-large w-4"></i> Dashboard Admin
+                  </Link>
+                )}
                 <Link href="/profile" onClick={() => setOpen(false)}
                   className="flex items-center gap-3 px-5 py-3 text-sm hover:bg-gray-50 transition">
                   <i className="fa fa-user w-4 text-gray-400"></i> Trang cá nhân
