@@ -1,6 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import {
+  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, Area
+} from 'recharts'
 
 interface DailyData {
   day: number
@@ -14,32 +17,36 @@ interface Props {
   currentYear: number
 }
 
-const MONTH_NAMES = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
-  'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12']
+const MONTH_NAMES = [
+  'Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6',
+  'Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12',
+]
+
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-xl shadow-xl">
+      <p className="font-bold mb-0.5">Ngày {label}</p>
+      <p className="text-orange-300">{payload[0]?.value ?? 0} công thức</p>
+    </div>
+  )
+}
 
 export default function BarChart({ dailyData, currentMonth, currentYear }: Props) {
-  const [tooltip, setTooltip] = useState<number | null>(null)
-  const maxCount = Math.max(...dailyData.map(d => d.count), 1)
-  const total = dailyData.reduce((s, d) => s + d.count, 0)
   const today = new Date().getDate()
+  const total = dailyData.reduce((s, d) => s + d.count, 0)
+  const todayCount = dailyData.find(d => d.day === today)?.count ?? 0
 
-  const CHART_H = 160
+  // Chỉ hiện data đến hôm nay, tương lai để count = null để không vẽ line
+  const chartData = dailyData.map(d => ({
+    day: d.day,
+    count: d.day <= today ? d.count : null,
+    bar: d.count,
+    isToday: d.day === today,
+  }))
 
-  // SVG line path — chỉ vẽ đến ngày hôm nay
-  const activeDays = dailyData.filter(d => d.day <= today)
-  const points = activeDays.map((d, i) => {
-    const x = dailyData.length === 1 ? 50 : ((d.day - 1) / (dailyData.length - 1)) * 100
-    const y = CHART_H - (d.count / maxCount) * CHART_H
-    return { x, y, ...d }
-  })
-
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-  const areaPath = points.length > 0 ? [
-    `M ${points[0].x} ${CHART_H}`,
-    ...points.map(p => `L ${p.x} ${p.y}`),
-    `L ${points[points.length - 1].x} ${CHART_H}`,
-    'Z',
-  ].join(' ') : ''
+  // Chỉ hiện label ngày 1, 5, 10, 15, 20, 25, cuối tháng
+  const showDays = new Set([1, 5, 10, 15, 20, 25, dailyData.length])
 
   return (
     <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-50">
@@ -53,81 +60,62 @@ export default function BarChart({ dailyData, currentMonth, currentYear }: Props
         <div className="flex gap-6 text-right">
           <div>
             <p className="text-xs text-gray-400">Tháng này</p>
-            <p className="font-bold text-gray-800 text-xl">{total}</p>
+            <p className="font-extrabold text-gray-800 text-2xl">{total}</p>
           </div>
           <div>
             <p className="text-xs text-gray-400">Hôm nay</p>
-            <p className="font-bold text-orange-500 text-xl">
-              {dailyData.find(d => d.day === today)?.count ?? 0}
-            </p>
+            <p className="font-extrabold text-orange-500 text-2xl">{todayCount}</p>
           </div>
         </div>
       </div>
 
-      <div className="relative">
-        {/* Bars */}
-        <div className="flex items-end gap-px h-48 mb-1">
-          {dailyData.map(item => {
-            const heightPct = Math.max(Math.round((item.count / maxCount) * 100), item.count > 0 ? 4 : 0)
-            const isToday = item.day === today
-            const isFuture = item.day > today
-            const isHovered = tooltip === item.day
-            return (
-              <div key={item.day}
-                className="flex-1 flex flex-col items-center justify-end relative h-full cursor-pointer"
-                onMouseEnter={() => setTooltip(item.day)}
-                onMouseLeave={() => setTooltip(null)}>
-                {/* Tooltip */}
-                {isHovered && (
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1.5 rounded-lg whitespace-nowrap z-20 shadow-lg">
-                    Ngày {item.day}: {item.count} CT
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
-                  </div>
-                )}
-                <div
-                  className={`w-full rounded-t transition-all duration-150 ${
-                    isFuture ? 'bg-gray-100' :
-                    isToday ? 'bg-orange-500' :
-                    isHovered ? 'bg-orange-500' : 'bg-orange-300'
-                  }`}
-                  style={{ height: isFuture ? '2px' : `${heightPct}%` }}
-                />
-              </div>
-            )
-          })}
-        </div>
+      <ResponsiveContainer width="100%" height={220}>
+        <ComposedChart data={chartData} margin={{ top: 10, right: 4, left: -20, bottom: 0 }}>
+          <defs>
+            <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f97316" stopOpacity={0.9} />
+              <stop offset="100%" stopColor="#fb923c" stopOpacity={0.5} />
+            </linearGradient>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f97316" stopOpacity={0.15} />
+              <stop offset="100%" stopColor="#f97316" stopOpacity={0} />
+            </linearGradient>
+          </defs>
 
-        {/* SVG line overlay */}
-        {points.length > 1 && (
-          <div className="absolute inset-0 pointer-events-none" style={{ bottom: '4px', top: 0 }}>
-            <svg viewBox={`0 0 100 ${CHART_H}`} preserveAspectRatio="none" className="w-full h-full">
-              <path d={areaPath} fill="rgba(249,115,22,0.1)" />
-              <path d={linePath} fill="none" stroke="#f97316" strokeWidth="1.2"
-                strokeLinecap="round" strokeLinejoin="round" />
-              {points.filter(p => p.count > 0).map((p, i) => (
-                <circle key={i} cx={p.x} cy={p.y} r="1.8"
-                  fill="white" stroke="#f97316" strokeWidth="1.2" />
-              ))}
-            </svg>
-          </div>
-        )}
+          <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
 
-        {/* X labels — chỉ hiện ngày 1, 5, 10, 15, 20, 25, cuối tháng */}
-        <div className="flex mt-2">
-          {dailyData.map(item => {
-            const show = [1, 5, 10, 15, 20, 25].includes(item.day) || item.day === dailyData.length
-            return (
-              <div key={item.day} className="flex-1 text-center">
-                {show && (
-                  <span className={`text-[10px] font-medium ${item.day === today ? 'text-orange-500 font-bold' : 'text-gray-400'}`}>
-                    {item.day}
-                  </span>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
+          <XAxis
+            dataKey="day"
+            tick={{ fontSize: 11, fill: '#9ca3af' }}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={v => showDays.has(v) ? String(v) : ''}
+            interval={0}
+          />
+          <YAxis
+            tick={{ fontSize: 11, fill: '#9ca3af' }}
+            tickLine={false}
+            axisLine={false}
+            allowDecimals={false}
+            width={28}
+          />
+
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(249,115,22,0.06)' }} />
+
+          <Bar dataKey="bar" fill="url(#barGrad)" radius={[4, 4, 0, 0]} maxBarSize={14} />
+
+          <Area
+            type="monotone"
+            dataKey="count"
+            stroke="#f97316"
+            strokeWidth={2}
+            fill="url(#areaGrad)"
+            dot={false}
+            activeDot={{ r: 4, fill: '#f97316', stroke: 'white', strokeWidth: 2 }}
+            connectNulls={false}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
     </div>
   )
 }
