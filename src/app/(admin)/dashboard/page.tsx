@@ -20,17 +20,32 @@ export default async function DashboardPage() {
     supabase.from('recipes').select('*', { count: 'exact', head: true }).eq('is_active', true),
   ])
 
-  const { data: allRecipes } = await supabase
-    .from('recipes').select('created_at')
-    .gte('created_at', new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString())
+  // Query theo ngày trong tháng hiện tại
+  const now = new Date()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString()
+
+  const { data: thisMonthRecipes } = await supabase
+    .from('recipes')
+    .select('created_at')
+    .gte('created_at', monthStart)
+    .lte('created_at', monthEnd)
     .order('created_at', { ascending: true })
 
-  const monthMap: Record<string, number> = {}
-  ;(allRecipes ?? []).forEach(r => {
-    const key = `Th ${new Date(r.created_at).getMonth() + 1}`
-    monthMap[key] = (monthMap[key] ?? 0) + 1
+  // Tạo map đủ tất cả ngày trong tháng (kể cả ngày 0 công thức)
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+  const dayMap: Record<number, number> = {}
+  for (let d = 1; d <= daysInMonth; d++) dayMap[d] = 0
+  ;(thisMonthRecipes ?? []).forEach(r => {
+    const day = new Date(r.created_at).getDate()
+    dayMap[day] = (dayMap[day] ?? 0) + 1
   })
-  const monthlyData = Object.entries(monthMap).map(([month, count]) => ({ month, count }))
+
+  const dailyData = Object.entries(dayMap).map(([day, count]) => ({
+    day: Number(day),
+    label: `${day}`,
+    count,
+  }))
 
   const { data: featuredRows } = await supabase.from('saved_recipes').select('recipe_id').limit(1000)
   let featuredRecipe = null
@@ -58,7 +73,7 @@ export default async function DashboardPage() {
           <StatsCards totalUsers={totalUsers ?? 0} totalRecipes={totalRecipes ?? 0} reportCount={0} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <BarChart monthlyData={monthlyData} />
+              <BarChart dailyData={dailyData} currentMonth={now.getMonth() + 1} currentYear={now.getFullYear()} />
               <FeaturedRecipe recipe={featuredRecipe} />
             </div>
             <RecentActivity recentUsers={recentUsers ?? []} recentRecipes={recentRecipes ?? []} />
