@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Avatar from '@/components/ui/Avatar'
 import { getRankInfo } from '@/lib/xp'
 import Link from 'next/link'
+import XPGuide from './XPGuide'
 
 export default async function LeaderboardPage() {
   const supabase = await createClient()
@@ -31,7 +32,10 @@ export default async function LeaderboardPage() {
       <div className="text-center mb-12">
         <span className="text-[10px] uppercase tracking-widest text-orange-600 font-bold">Cộng đồng</span>
         <h1 className="text-4xl font-bold font-serif mt-2 mb-3">Bảng xếp hạng</h1>
-        <p className="text-gray-400 text-sm">Top đầu bếp tích cực nhất cộng đồng Bếp Nhà Làm</p>
+        <div className="flex items-center justify-center gap-2">
+          <p className="text-gray-400 text-sm">Top đầu bếp tích cực nhất cộng đồng Bếp Nhà Làm</p>
+          <XPGuide />
+        </div>
       </div>
 
       {/* Podium top 3 */}
