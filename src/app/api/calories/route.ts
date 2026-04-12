@@ -31,7 +31,7 @@ Hãy trả về JSON với format sau (không có markdown, chỉ JSON thuần):
   "summary": "<nhận xét ngắn về giá trị dinh dưỡng bằng tiếng Việt, tối đa 1 câu>"
 }`
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
     const result = await model.generateContent(prompt)
     const text = result.response.text().trim()
 
