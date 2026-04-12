@@ -79,13 +79,33 @@ export async function createRecipe(payload: RecipePayload) {
     if (stepError) console.error('steps error:', stepError.message)
   }
 
-  // Nếu tạo trong context event → join event_participants
+  // Nếu tạo trong context event → kiểm tra giới hạn rồi join
   if (payload.event_id) {
-    await supabase.from('event_participants').upsert({
+    // Lấy giới hạn của event
+    const { data: event } = await supabase
+      .from('events')
+      .select('max_recipes_per_user')
+      .eq('id', payload.event_id)
+      .single()
+
+    const maxPerUser = event?.max_recipes_per_user ?? 2
+
+    // Đếm số công thức user đã gửi vào event này
+    const { count } = await supabase
+      .from('event_participants')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', payload.event_id)
+      .eq('user_id', user.id)
+
+    if ((count ?? 0) >= maxPerUser) {
+      return { error: `Bạn chỉ được gửi tối đa ${maxPerUser} công thức vào sự kiện này` }
+    }
+
+    await supabase.from('event_participants').insert({
       event_id: payload.event_id,
       user_id: user.id,
       recipe_id: recipe.id,
-    }, { onConflict: 'event_id,user_id' })
+    })
   }
 
   return { slug: recipe.slug }

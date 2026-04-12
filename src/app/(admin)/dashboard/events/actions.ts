@@ -14,12 +14,13 @@ export async function createEvent(formData: FormData) {
   const banner_image = (formData.get('banner_image') as string).trim() || null
   const start_date = formData.get('start_date') as string
   const end_date = formData.get('end_date') as string
+  const max_recipes_per_user = parseInt(formData.get('max_recipes_per_user') as string) || 2
 
   if (!title || !start_date || !end_date) return { error: 'Vui lòng điền đầy đủ thông tin' }
 
   const admin = createAdminClient()
   const { data, error } = await admin.from('events').insert({
-    title, description, banner_image, start_date, end_date, created_by: user.id,
+    title, description, banner_image, start_date, end_date, max_recipes_per_user, created_by: user.id,
   }).select().single()
 
   if (error) return { error: error.message }

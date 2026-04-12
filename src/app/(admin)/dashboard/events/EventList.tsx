@@ -118,6 +118,13 @@ function EventForm({ onSuccess }: { onSuccess: (e: Event) => void }) {
               </div>
             </div>
 
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Giới hạn công thức / user</label>
+              <input name="max_recipes_per_user" type="number" min={1} max={10} defaultValue={2}
+                className="w-full bg-gray-100 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-200 text-sm" />
+              <p className="text-xs text-gray-400 mt-1">Mỗi user được gửi tối đa bao nhiêu công thức</p>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Ngày bắt đầu *</label>
@@ -212,6 +219,10 @@ export default function EventList({ events }: { events: Event[]; adminId: string
                       className={`flex-1 py-2 rounded-xl text-xs font-bold transition ${event.is_active ? 'bg-gray-100 hover:bg-red-50 hover:text-red-500 text-gray-600' : 'bg-green-50 hover:bg-green-100 text-green-600'}`}>
                       {event.is_active ? 'Ẩn sự kiện' : 'Kích hoạt'}
                     </button>
+                    <a href={`/dashboard/events/${event.id}`}
+                      className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-bold transition">
+                      Quản lý
+                    </a>
                     <button onClick={() => handleDelete(event.id)} disabled={isPending}
                       className="px-4 py-2 bg-gray-100 hover:bg-red-50 hover:text-red-500 rounded-xl text-xs font-bold transition">
                       Xoá

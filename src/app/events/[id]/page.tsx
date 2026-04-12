@@ -15,7 +15,7 @@ export default async function EventDetailPage({ params }: Props) {
 
   const { data: event } = await supabase
     .from('events')
-    .select(`id, title, description, banner_image, start_date, end_date, is_active, created_by`)
+    .select(`id, title, description, banner_image, start_date, end_date, is_active, created_by, max_recipes_per_user`)
     .eq('id', id)
     .single()
 
@@ -24,16 +24,18 @@ export default async function EventDetailPage({ params }: Props) {
   // Lấy user hiện tại
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Kiểm tra user đã tham gia chưa
+  // Kiểm tra user đã tham gia chưa và đã gửi bao nhiêu công thức
   let hasJoined = false
+  let userSubmitCount = 0
+  const maxPerUser = (event as any).max_recipes_per_user ?? 2
   if (user) {
-    const { data: joined } = await supabase
+    const { data: joined, count } = await supabase
       .from('event_participants')
-      .select('id')
+      .select('id', { count: 'exact' })
       .eq('event_id', id)
       .eq('user_id', user.id)
-      .maybeSingle()
-    hasJoined = !!joined
+    hasJoined = (count ?? 0) > 0
+    userSubmitCount = count ?? 0
   }
 
   // Lấy danh sách công thức tham gia event
@@ -109,15 +111,16 @@ export default async function EventDetailPage({ params }: Props) {
                     Đăng nhập
                   </Link>
                 </div>
-              ) : hasJoined ? (
+              ) : hasJoined && userSubmitCount >= maxPerUser ? (
                 <div className="text-center">
                   <i className="fa fa-check-circle text-green-500 text-2xl mb-2 block"></i>
-                  <p className="text-sm font-bold text-green-600 mb-1">Bạn đã tham gia!</p>
-                  <p className="text-xs text-gray-400">Công thức của bạn đã được ghi nhận.</p>
+                  <p className="text-sm font-bold text-green-600 mb-1">Đã đạt giới hạn!</p>
+                  <p className="text-xs text-gray-400">Bạn đã gửi {userSubmitCount}/{maxPerUser} công thức.</p>
                 </div>
               ) : (
                 <div>
-                  <p className="text-sm text-gray-500 mb-3">Tạo công thức để tham gia thử thách này.</p>
+                  <p className="text-sm text-gray-500 mb-1">Tạo công thức để tham gia thử thách này.</p>
+                  {hasJoined && <p className="text-xs text-orange-500 mb-3">Đã gửi {userSubmitCount}/{maxPerUser} công thức</p>}
                   <Link
                     href={`/recipes/create?event=${event.id}`}
                     className="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition text-sm"
