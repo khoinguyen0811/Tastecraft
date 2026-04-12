@@ -34,6 +34,23 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set('redirect', pathname)
       return NextResponse.redirect(loginUrl)
     }
+
+    // Kiểm tra ban — dùng admin client để bypass RLS
+    const { createClient: createAdmin } = await import('@supabase/supabase-js')
+    const adminClient = createAdmin(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+    const { data: profile } = await adminClient
+      .from('users').select('banned_until').eq('id', user.id).single()
+
+    if (profile?.banned_until && new Date(profile.banned_until) > new Date()) {
+      // Đăng xuất và redirect về trang báo bị ban
+      await supabase.auth.signOut()
+      const bannedUrl = new URL('/banned', request.url)
+      return NextResponse.redirect(bannedUrl)
+    }
   } else {
     // Với các route khác chỉ refresh session token, không block
     await supabase.auth.getSession()

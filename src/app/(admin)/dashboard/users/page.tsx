@@ -7,14 +7,15 @@ export default async function UsersPage() {
 
   const { data: users } = await supabase
     .from('users')
-    .select('id, username, email, role, avatar, created_at')
+    .select('id, username, email, role, avatar, xp, rank, banned_until, created_at')
     .order('created_at', { ascending: false })
 
   return (
     <>
-      <AdminHeader username={profile.username} avatar={profile.avatar} title="Quản lý người dùng" subtitle={`${users?.length ?? 0} tài khoản`} />
+      <AdminHeader username={profile.username} avatar={profile.avatar}
+        title="Quản lý người dùng" subtitle={`${users?.length ?? 0} tài khoản`} />
       <main className="flex-1 overflow-y-auto bg-[#f8f9fa] p-8">
-        <UserTable users={users ?? []} />
+        <UserTable users={(users ?? []) as any[]} />
       </main>
     </>
   )
