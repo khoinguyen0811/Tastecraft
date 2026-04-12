@@ -28,12 +28,12 @@ export default function RecipeCard({ recipe }: Props) {
             alt={recipe.title}
             className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
-          {/* Diamond badge góc trên phải */}
+          {/* Diamond badge góc trên phải
           {isDiamond && (
             <div className="absolute top-3 right-3 z-10">
               <DiamondBadge size="md" />
             </div>
-          )}
+          )} */}
           <button className="absolute top-4 right-4 bg-white/80 p-2 rounded-full hover:bg-white" onClick={e => e.preventDefault()}>
             <i className="far fa-heart text-gray-700"></i>
           </button>

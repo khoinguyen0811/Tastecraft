@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { RecipeIngredient } from '@/types'
+import CalorieCalculator from './CalorieCalculator'
 
 interface Props {
   ingredients: RecipeIngredient[]
@@ -72,6 +73,11 @@ export default function IngredientList({ ingredients, defaultServings = 2 }: Pro
           </label>
         ))}
       </div>
+
+      <CalorieCalculator
+        ingredients={ingredients.map(i => ({ name: i.name, quantity: scaleQuantity(i.quantity, ratio) }))}
+        servings={servings}
+      />
     </div>
   )
 }

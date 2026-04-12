@@ -5,7 +5,7 @@ export default function DiamondBadge({ size = 'sm' }: { size?: 'sm' | 'md' }) {
 
   return (
     <span
-      className={`${cls} rounded-full bg-gradient-to-br from-cyan-300 via-blue-400 to-purple-400 flex items-center justify-center shadow-lg diamond-shake`}
+      className={`${cls} rounded-full flex items-center justify-center shadow-lg diamond-shake`}
       title="Diamond rank"
     >
       💎
