@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function isValidUrl(src?: string | null): boolean {
   if (!src) return false
   return src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')
 }
+
+const PLACEHOLDER = '/stasteplaceholderimg.avif'
 
 interface Props {
   src?: string | null
@@ -14,17 +16,22 @@ interface Props {
 }
 
 export default function RecipeImage({ src, alt, className = '' }: Props) {
-  // Khởi tạo error = true ngay nếu src không hợp lệ — tránh flash broken image khi hydrate
-  const [error, setError] = useState(() => !isValidUrl(src))
+  const [broken, setBroken] = useState(false)
 
-  const imgSrc = error ? '/stasteplaceholderimg.avif' : src!
+  // Reset broken state khi src thay đổi
+  useEffect(() => {
+    setBroken(false)
+  }, [src])
+
+  // Nếu src không hợp lệ hoặc đã bị lỗi → dùng placeholder
+  const imgSrc = (!isValidUrl(src) || broken) ? PLACEHOLDER : src!
 
   return (
     <img
       src={imgSrc}
       alt={alt}
       className={className}
-      onError={() => setError(true)}
+      onError={() => setBroken(true)}
     />
   )
 }
