@@ -1,5 +1,6 @@
 import { RecipeDetail, difficultyLabel } from '@/types'
 import Avatar from '@/components/ui/Avatar'
+import DiamondBadge from '@/components/ui/DiamondBadge'
 
 interface Props {
   recipe: RecipeDetail
@@ -46,9 +47,26 @@ export default function RecipeHero({ recipe }: Props) {
       </div>
 
       <div className="flex items-center space-x-3">
-        <Avatar src={recipe.users.avatar} name={recipe.users.username} size="w-10 h-10" />
+        <div className="relative">
+          <Avatar
+            src={recipe.users.avatar}
+            name={recipe.users.username}
+            size="w-10 h-10"
+            className={(recipe.users as any).rank === 'Diamond' ? 'diamond-border' : ''}
+          />
+          {(recipe.users as any).rank === 'Diamond' && (
+            <div className="absolute -top-2 -right-2">
+              <DiamondBadge size="sm" />
+            </div>
+          )}
+        </div>
         <div>
-          <p className="font-bold text-sm">{recipe.users.username}</p>
+          <div className="flex items-center gap-1.5">
+            <p className="font-bold text-sm">{recipe.users.username}</p>
+            {(recipe.users as any).rank === 'Diamond' && (
+              <span className="text-xs text-cyan-500 font-bold">Diamond</span>
+            )}
+          </div>
           <p className="text-xs text-gray-400 uppercase">Tác giả công thức</p>
         </div>
       </div>

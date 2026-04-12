@@ -22,7 +22,7 @@ export default async function RecipeDetailPage({ params }: Props) {
     .select(`
       id, title, slug, image_main, description, cooking_time, servings, difficulty, is_active, created_at,
       user_id,
-      users ( username, avatar ),
+      users ( username, avatar, rank ),
       recipe_ingredients ( id, name, quantity ),
       recipe_steps ( id, step_num, content, note, step_image ),
       recipe_feedbacks (

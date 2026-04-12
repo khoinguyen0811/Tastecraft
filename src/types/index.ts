@@ -52,7 +52,7 @@ export interface Recipe {
   servings: number
   difficulty: Difficulty
   created_at: string
-  users: Pick<User, 'username' | 'avatar'>
+  users: Pick<User, 'username' | 'avatar'> & { rank?: string }
   tags?: Tag[]
   avg_rating?: number
   review_count?: number

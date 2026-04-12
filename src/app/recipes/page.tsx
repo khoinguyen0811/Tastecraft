@@ -16,7 +16,7 @@ async function RecipeResults({ q, tags }: { q: string; tags: string[] }) {
     .from('recipes')
     .select(`
       id, title, slug, image_main, description, cooking_time, difficulty, created_at,
-      users ( username, avatar ),
+      users ( username, avatar, rank ),
       recipe_feedbacks ( rating ),
       recipe_tag ( tags ( id, name, type, slug ) )
     `)

@@ -19,7 +19,7 @@ function mapRecipe(r: any): Recipe {
 
 const SELECT_FIELDS = `
   id, title, slug, image_main, description, cooking_time, difficulty, created_at,
-  users ( username, avatar ),
+  users ( username, avatar, rank ),
   recipe_feedbacks ( rating ),
   recipe_tag ( tags ( id, name, type, slug ) )
 `

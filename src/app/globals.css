@@ -31,3 +31,61 @@ body {
     width: 100%;
   }
 }
+
+/* Diamond rank animations */
+@keyframes diamond-shake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-12deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(8deg); }
+}
+
+@keyframes diamond-shine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.diamond-shake {
+  animation: diamond-shake 2.5s ease-in-out infinite;
+  animation-delay: 1s;
+  display: inline-block;
+}
+
+.diamond-border {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.diamond-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #67e8f9, #a78bfa, #67e8f9, #38bdf8);
+  background-size: 300% 300%;
+  animation: diamond-shine 2s linear infinite;
+  z-index: -1;
+}
+
+.diamond-card-border {
+  position: relative;
+}
+
+.diamond-card-border::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, #67e8f9 0%, #a78bfa 30%, #38bdf8 60%, #67e8f9 100%);
+  background-size: 300% 300%;
+  animation: diamond-shine 2s linear infinite;
+  z-index: 0;
+}
+
+.diamond-card-border > * {
+  position: relative;
+  z-index: 1;
+}
+
